@@ -130,13 +130,15 @@ def GetIndicatorsFromWB(country:str):
 def FileHeader(gdata:dict,data:dict):
     time = dt.datetime.now()
     timestamp = time.timestamp()
+    #idno = int(timestamp)
+    idno = IdGenerator()
     date = time.strftime('%d/%m/%Y')
     country = gdata['Ülke']
     #bibfile = "reports/bibfiles/country.replace(' ','')+'.bib'"
     bibfile = "api.bib"
     title = f"{country} Automatic Indicator Report"
     headerString=f"""---
-id: 
+id: {idno}
 date: {date}
 author: Ülke Yönetim Sistemi
 title: {title}  
@@ -147,12 +149,12 @@ colorlinks: true
 keywords:
 modify:
 --- """
-    return headerString
+    return headerString,idno
 
 def ReportMd(gdata:dict,data:dict):
     countryName = gdata['Ülke']
+    fileHeader,idno = FileHeader(gdata,data)
     filename = f"{mdReportsDirectory}/{gdata['Ülke'].replace(' ','')}_Report.md"
-    fileHeader = FileHeader(gdata,data)
     gDataTableRaw = md_table([gdata]).set_params(row_sep='markdown').get_markdown()
     gDataTable = gDataTableRaw.replace('```','')
     dataTableRaw = md_table(data).set_params(row_sep='markdown').get_markdown() 
@@ -179,6 +181,13 @@ def ReportMd(gdata:dict,data:dict):
     f.close()
     result=f"Report File saved as {filename}"
     return filename
+
+def IdGenerator(): 
+    time = dt.datetime.now()
+    timestamp = time.timestamp()
+    idno = int(timestamp)
+    return idno
+
 
     
 
